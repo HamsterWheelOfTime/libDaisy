@@ -14,7 +14,7 @@ static const size_t kAudioMaxBufferSize = 1024;
 static const size_t kAudioMaxChannels   = 4;
 
 // Static Global Buffers
-// 8kB in SRAM1, non-cached memory
+// 16kB in SRAM1, non-cached memory
 // 1k samples in, 1k samples out, 4 bytes per sample.
 // One buffer per 2 channels (Interleaved on hardware)
 static int32_t DMA_BUFFER_MEM_SECTION
