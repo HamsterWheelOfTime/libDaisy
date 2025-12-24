@@ -96,7 +96,10 @@ void DaisySeed::Init(bool boost)
     System::Config syscfg;
     boost ? syscfg.Boost() : syscfg.Defaults();
 
+#if DSY_QSPI_ENABLED
     ConfigureQspi();
+#endif
+
     // Configure the built-in GPIOs.
     GPIO::Config &led_config       = led.GetConfig();
     GPIO::Config &testpoint_config = testpoint.GetConfig();
@@ -118,8 +121,10 @@ void DaisySeed::Init(bool boost)
 
     system.Init(syscfg);
 
+#if DSY_QSPI_ENABLED
     if(memory != System::MemoryRegion::QSPI)
-        qspi.Init(qspi_config);
+	qspi.Init(qspi_config);
+#endif
 
     if(boot_version != System::BootInfo::Version::LT_v6_0
        || (boot_version == System::BootInfo::Version::LT_v6_0
@@ -237,6 +242,7 @@ const SaiHandle &DaisySeed::AudioSaiHandle() const
 
 // Private Implementation
 
+#if DSY_QSPI_ENABLED
 void DaisySeed::ConfigureQspi()
 {
     qspi_config.device = QSPIHandle::Config::Device::IS25LP064A;
@@ -249,6 +255,8 @@ void DaisySeed::ConfigureQspi()
     qspi_config.pin_config.clk = Pin(PORTF, 10);
     qspi_config.pin_config.ncs = Pin(PORTG, 6);
 }
+#endif
+
 void DaisySeed::ConfigureAudio()
 {
     // SAI1 -- Peripheral
@@ -263,11 +271,13 @@ void DaisySeed::ConfigureAudio()
     sai_config.pin_config.mclk = Pin(PORTE, 2);
     sai_config.pin_config.sck  = Pin(PORTE, 5);
 
+#ifndef DSY_SEED_VERSION_1_1
     // Device-based Init
     switch(CheckBoardVersion())
     {
         case BoardVersion::DAISY_SEED_1_1:
         {
+#endif /* DSY_SEED_VERSION_1_1 */
             // Data Line Directions
             sai_config.a_dir         = SaiHandle::Config::Direction::RECEIVE;
             sai_config.pin_config.sa = Pin(PORTE, 6);
@@ -285,6 +295,7 @@ void DaisySeed::ConfigureAudio()
             codec_cfg.Defaults();
             Wm8731 codec;
             codec.Init(codec_cfg, i2c_handle);
+#ifndef DSY_SEED_VERSION_1_1
         }
         break;
         case BoardVersion::DAISY_SEED_2_DFM:
@@ -314,6 +325,7 @@ void DaisySeed::ConfigureAudio()
         }
         break;
     }
+#endif /* DSY_SEED_VERSION_1_1 */
 
     // Then Initialize
     sai_1_handle_.Init(sai_config);
@@ -345,7 +357,6 @@ DaisySeed::BoardVersion DaisySeed::CheckBoardVersion()
      *  * PD3 tied to gnd is Daisy Seed v1.1 (aka Daisy Seed rev5)
      *  * PD4 tied to gnd reserved for future hardware
      */
-
     /** Initialize GPIO */
     GPIO s2dfm_gpio, seed_1_1_gpio;
     Pin  seed_1_1_pin(PORTD, 3);

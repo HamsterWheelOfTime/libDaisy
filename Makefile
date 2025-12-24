@@ -19,6 +19,9 @@ usbd/usbd_desc \
 usbd/usbd_conf \
 usbh/usbh_conf
 
+ifeq ($(DSY_SINGLE_BOARD), seed)
+CPP_MODULES = daisy_seed
+else
 CPP_MODULES = \
 daisy_seed \
 daisy_pod \
@@ -27,7 +30,10 @@ daisy_petal \
 daisy_field \
 daisy_versio \
 daisy_legio \
-daisy_patch_sm \
+daisy_patch_sm
+endif
+
+CPP_MODULES += \
 sys/fatfs \
 sys/system \
 dev/sr_595 \
@@ -299,6 +305,10 @@ C_DEFS =  \
 
 # File I/O Abstract Interface for FatFS:
 C_DEFS += -DFILEIO_ENABLE_FATFS_READER
+
+ifeq ($(DSY_SEED_VERSION), 1_1)
+C_DEFS += -DDSY_SEED_VERSION_1_1
+endif
 
 C_INCLUDES = \
 -I$(MODULE_DIR) \

@@ -93,6 +93,7 @@ extern "C"
         HAL_SYSTICK_IRQHandler();
     }
 
+#if DSY_USB_OTG_ENABLED
     /** USB IRQ Handlers since they are shared resources for multiple classes */
     extern HCD_HandleTypeDef hhcd_USB_OTG_HS;
     extern PCD_HandleTypeDef hpcd_USB_OTG_HS;
@@ -120,6 +121,7 @@ extern "C"
         if(hpcd_USB_OTG_HS.Instance)
             HAL_PCD_IRQHandler(&hpcd_USB_OTG_HS);
     }
+#endif /* DSY_URB_OTG_ENABLED */
 
     // TODO: Add some real handling to the HardFaultHandler
     void HardFault_Handler()
