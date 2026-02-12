@@ -138,7 +138,7 @@ class DaisySeed
 
     // While the library is still in heavy development, most of the
     // configuration handles will remain public.
-#if DSY_QPSI_ENABLED
+#if DSY_QSPI_ENABLED
     QSPIHandle         qspi;
     QSPIHandle::Config qspi_config;
 #endif

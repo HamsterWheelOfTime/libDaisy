@@ -3,6 +3,7 @@
 CHIPSET ?= stm32h7x
 
 TARGET_BIN=$(TARGET).bin
+TARGET_QSPI_BIN=$(TARGET)_qspi.bin
 TARGET_ELF=$(TARGET).elf
 
 # If you have the arm-none-eabi- toolchain located in a particular place, but not installed for the entire system, add the path here:
@@ -81,7 +82,8 @@ CP = $(PREFIX)objcopy
 SZ = $(PREFIX)size
 endif
 HEX = $(CP) -O ihex
-BIN = $(CP) -O binary -S
+BIN = $(CP) -R '.itcmram*' -O binary -S
+BIN_QSPI = $(CP) -j '.itcmram*' -O binary -S
 
 #######################################
 # CFLAGS
@@ -120,6 +122,14 @@ C_DEFS +=  \
 # for debugging bootloaded applications
 ifdef DEBUG
 C_DEFS += -DDEBUG
+endif
+
+ifeq ($(DSY_SEED_VERSION), 1_1)
+C_DEFS += -DDSY_SEED_VERSION_1_1
+endif
+
+ifeq ($(DSY_QSPI), 1)
+C_DEFS += -DDSY_QSPI_ENABLED=1
 endif
 
 # AS includes
@@ -211,6 +221,7 @@ CPP_STANDARD ?= -std=gnu++14
 
 INTERNAL_ADDRESS = 0x08000000
 QSPI_ADDRESS ?= 0x90040000
+QSPI_ITCM_ADDRESS ?= 0x90000000
 
 # For the time being, we'll keep the Daisy Bootloader's PID as df11
 # DAISY_PID = a360
@@ -271,6 +282,11 @@ LDFLAGS += $(MCU) --specs=nano.specs --specs=nosys.specs -T$(LDSCRIPT) $(LIBDIR)
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
+ifeq ($(APP_TYPE), BOOT_NONE)
+
+all: $(BUILD_DIR)/$(TARGET_QSPI_BIN)
+
+endif
 #######################################
 # build the application
 #######################################
@@ -300,6 +316,9 @@ $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(BIN) $< $@
+
+$(BUILD_DIR)/%_qspi.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+	$(BIN_QSPI) $< $@
 
 $(BUILD_DIR):
 	mkdir $@
@@ -344,6 +363,9 @@ endif
 #######################################
 # dfu-util
 #######################################
+
+program-qspi-dfu:
+	dfu-util -a 0 -s $(QSPI_ITCM_ADDRESS) -D $(BUILD_DIR)/$(TARGET_QSPI_BIN) -d ,0483:$(DAISY_PID)
 
 program-dfu:
 	dfu-util -a 0 -s $(FLASH_ADDRESS):leave -D $(BUILD_DIR)/$(TARGET_BIN) -d ,0483:$(USBPID)

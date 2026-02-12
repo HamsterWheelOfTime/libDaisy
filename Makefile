@@ -310,6 +310,10 @@ ifeq ($(DSY_SEED_VERSION), 1_1)
 C_DEFS += -DDSY_SEED_VERSION_1_1
 endif
 
+ifeq ($(DSY_QSPI), 1)
+C_DEFS += -DDSY_QSPI_ENABLED=1
+endif
+
 C_INCLUDES = \
 -I$(MODULE_DIR) \
 -I$(MODULE_DIR)/sys \
