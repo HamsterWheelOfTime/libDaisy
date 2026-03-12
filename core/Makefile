@@ -209,10 +209,11 @@ CPPFLAGS += \
 -fno-move-loop-invariants \
 -fno-unwind-tables \
 -fno-rtti \
--Wno-register
+-Wno-register \
+-Wno-volatile
 
 C_STANDARD = -std=gnu11
-CPP_STANDARD ?= -std=gnu++14
+CPP_STANDARD ?= -std=gnu++20
 
 
 #######################################

@@ -356,10 +356,11 @@ CFLAGS += \
 CPPFLAGS = $(CFLAGS) $(CPP_WARNINGS)
 CPPFLAGS += \
 -fno-exceptions \
--fno-rtti
+-fno-rtti \
+-Wno-volatile
 
 C_STANDARD = -std=gnu11
-CPP_STANDARD += -std=gnu++14
+CPP_STANDARD += -std=gnu++20
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).a
