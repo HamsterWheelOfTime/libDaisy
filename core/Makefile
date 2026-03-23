@@ -82,8 +82,8 @@ CP = $(PREFIX)objcopy
 SZ = $(PREFIX)size
 endif
 HEX = $(CP) -O ihex
-BIN = $(CP) -R '.itcmram*' -O binary -S
-BIN_QSPI = $(CP) -j '.itcmram*' -O binary -S
+BIN = $(CP) -R '.itcmram*' -R '.qspiflash*' -O binary -S
+BIN_QSPI = $(CP) -j '.itcmram*' -j '.qspiflash*' -O binary -S
 
 #######################################
 # CFLAGS
