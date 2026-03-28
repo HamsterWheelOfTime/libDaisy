@@ -314,6 +314,10 @@ ifeq ($(DSY_QSPI), 1)
 C_DEFS += -DDSY_QSPI_ENABLED=1
 endif
 
+ifeq ($(DSY_USB_OTG), 1)
+C_DEFS += -DDSY_USB_OTG_ENABLED=1
+endif
+
 C_INCLUDES = \
 -I$(MODULE_DIR) \
 -I$(MODULE_DIR)/sys \

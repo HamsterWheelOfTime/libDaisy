@@ -132,6 +132,10 @@ ifeq ($(DSY_QSPI), 1)
 C_DEFS += -DDSY_QSPI_ENABLED=1
 endif
 
+ifeq ($(DSY_USB_OTG), 1)
+C_DEFS += -DDSY_USB_OTG_ENABLED=1
+endif
+
 # AS includes
 AS_INCLUDES =
 
